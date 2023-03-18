@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishSingleFile>true</PublishSingleFile>
+        <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+        <RootNamespace>OpenSystemQuery</RootNamespace>
+        <ApplicationIcon>Resources/Images/Default/Icon.ico</ApplicationIcon>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DebugSymbols>false</DebugSymbols>
+      <DebugType>embedded</DebugType>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DebugType>embedded</DebugType>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove=".gitignore" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <TrimmerRootDescriptor Include="Roots.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="0.10.18" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.18" />
+        <PackageReference Include="MessageBox.Avalonia" Version="2.1.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="RestSharp" Version="109.0.1" />
+        <PackageReference Include="VirusTotalNet" Version="2.1.0" />
+        <PackageReference Include="WebViewControl-Avalonia" Version="2.106.7" />
+        <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Images\Default\OpenSystemQueryDark.png" />
+      <None Remove="Resources\Images\Default\OpenSystemQueryGold.png" />
+      <None Remove="Resources\Images\Default\OpenSystemQueryIcon.ico" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\MainWindow.axaml.cs">
+        <DependentUpon>MainWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Views\ScanResultFragment.axaml.cs">
+        <DependentUpon>ScanResult.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Images\Default\Icon.png" />
+      <AvaloniaResource Include="Resources\Images\Default\Icon.png" />
+      <None Remove="Resources\Images\Default\CheckIcon.png" />
+      <None Remove="Resources\Images\Default\CrossIcon.png" />
+    </ItemGroup>
+</Project>

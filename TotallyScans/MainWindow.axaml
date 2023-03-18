@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:totallyScans="clr-namespace:TotallyScans"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="500"
+        Height="620"
+        Background="#181735"
+        x:Class="TotallyScans.MainWindow"
+        Title="Totally Scans!">
+        
+        <DockPanel x:Name="MainPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <totallyScans:MenuRibbon x:Name="MenuRibbon" DockPanel.Dock="Top" Height="60"/>
+                <ScrollViewer VerticalAlignment="Stretch">
+                        <StackPanel VerticalAlignment="Stretch">
+                                <DockPanel x:Name="ScanPanel" VerticalAlignment="Stretch">
+                                        <DockPanel x:Name="ScanGreetPanel" IsVisible="True" DockPanel.Dock="Top">
+                                                <Image x:Name="GreetIcon" DockPanel.Dock="Top" Height="500"/>
+                                        </DockPanel>
+                                        
+                                        <DockPanel x:Name="ScanFilePanel" IsVisible="False" DockPanel.Dock="Top" Height="500">
+                                                <DockPanel x:Name="BrowseDialog" DockPanel.Dock="Top" IsVisible="True">
+                                                        <Label x:Name="BrowseDialogButton" Foreground="White" FontSize="22" BorderBrush="White" BorderThickness="1" Background="Transparent" Width="500" Height="500" VerticalContentAlignment="Center" HorizontalContentAlignment="Center">BROWSE</Label>
+                                                </DockPanel>
+                                        </DockPanel>
+                                        
+                                        <DockPanel x:Name="ScanUrlPanel" IsVisible="False" DockPanel.Dock="Top" Height="500">
+                                                <DockPanel DockPanel.Dock="Top" Height="450">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="60" Margin="5,5,5,5" Background="#44000000" DockPanel.Dock="Top">
+                                                                <Label Content="URL/IP" Foreground="White" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                                <TextBox x:Name="UrlBox" Text="" Width="280" HorizontalAlignment="Right" VerticalAlignment="Center"></TextBox>
+                                                        </StackPanel>        
+                                                </DockPanel>
+                                                <Label x:Name="ScanUrlButton" DockPanel.Dock="Bottom" Foreground="White" FontSize="22" BorderBrush="White" BorderThickness="1" Background="Transparent" Height="45" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="5,5,5,5">SCAN</Label>
+                                        </DockPanel>
+                                        
+                                        <totallyScans:MenuRibbon x:Name="ScanRibbon" Height="60" VerticalAlignment="Bottom"></totallyScans:MenuRibbon>
+                                </DockPanel>
+                                
+                                <DockPanel x:Name="WebViewPanel" DockPanel.Dock="Top" IsVisible="False" Height="560">
+                                                
+                                </DockPanel>
+                                
+                                <DockPanel x:Name="SettingsPanel" IsVisible="False" DockPanel.Dock="Top" Width="500" VerticalAlignment="Stretch">
+                                        <DockPanel DockPanel.Dock="Top" Height="500">
+                                                <StackPanel Orientation="Vertical">
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="60" Margin="5,5,5,5" Background="#44000000" DockPanel.Dock="Top">
+                                                                <Label Content="API KEY" Foreground="White" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                                                <TextBox x:Name="ApiTextBox" Text="" Width="280" HorizontalAlignment="Right" VerticalAlignment="Center"></TextBox>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="60" Margin="5,5,5,5" Background="#44000000" DockPanel.Dock="Top">
+                                                                <Label x:Name="ApiKeyRegisterButton" Content="REGISTER FOR A VIRUSTOTAL PUBLIC API KEY" Foreground="LightBlue" Background="Transparent" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="LightGray" BorderThickness="1" Margin="5,0,0,0"/>
+                                                        </StackPanel>
+                                                </StackPanel>
+                                        </DockPanel>
+                                        <Label x:Name="SaveSettingsButton" DockPanel.Dock="Bottom" Foreground="White" FontSize="22" BorderBrush="White" BorderThickness="1" Background="Transparent" Height="45" VerticalAlignment="Bottom" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Margin="5,5,5,5">SAVE</Label>
+                                </DockPanel>
+                        </StackPanel>
+                </ScrollViewer>
+        </DockPanel>
+</Window>
