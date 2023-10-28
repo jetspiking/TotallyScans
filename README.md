@@ -1,5 +1,5 @@
 # Totally Scans!
-<img src="https://raw.githubusercontent.com/jetspiking/TotallyScans/main/Readme/Start.png">
+<img src="https://raw.githubusercontent.com/jetspiking/TotallyScans/main/Readme/Start.png" width="600">
 
 Cross Platform GUI application for VirusTotal
 
