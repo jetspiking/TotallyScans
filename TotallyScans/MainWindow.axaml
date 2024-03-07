@@ -47,7 +47,7 @@
                                                 <StackPanel Orientation="Vertical">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="60" Margin="5,5,5,5" Background="#44000000" DockPanel.Dock="Top">
                                                                 <Label Content="API KEY" Foreground="White" Width="200" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0,0,0"/>
-                                                                <TextBox x:Name="ApiTextBox" Text="" Width="280" HorizontalAlignment="Right" VerticalAlignment="Center"></TextBox>
+                                                                <TextBox x:Name="ApiTextBox" PasswordChar="•" Text="" Width="280" HorizontalAlignment="Right" VerticalAlignment="Center"></TextBox>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="60" Margin="5,5,5,5" Background="#44000000" DockPanel.Dock="Top">
                                                                 <Label x:Name="ApiKeyRegisterButton" Content="REGISTER FOR A VIRUSTOTAL PUBLIC API KEY" Foreground="LightBlue" Background="Transparent" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="LightGray" BorderThickness="1" Margin="5,0,0,0"/>

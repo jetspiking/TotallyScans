@@ -1,16 +1,16 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using MessageBox.Avalonia.BaseWindows.Base;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
+using MsBox.Avalonia;
 using TotallyScans.Core;
 using TotallyScans.Misc;
 using WebViewControl;
+using MsBox.Avalonia.Base;
 
 namespace TotallyScans;
 
@@ -25,8 +25,9 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
     private const String TextSettingsDialogSaveDescriptionValid = "Your API key was saved successfully!";
     private const String TextSettingsDialogSaveDescriptionError = "Your API key does not seem valid!";
     private const String TextSettingsDialogRegisterKeyTitle = "No valid API key";
-    private const String TextSettingsDialogRegisterKeyDescription = "Please register for a valid API key in \"SETTINGS\" menu!";
+    private const String TextSettingsDialogRegisterKeyDescription = "Welcome, please register and receive an API key from VirusTotal";
     private const String TextErrorTitle = "Error";
+    private const String TextConfigurationTitle = "Configuration";
 
     private const String SaveLocationFolder = "TotallyScans";
     private const String SettingsFile = "Settings.json";
@@ -49,8 +50,6 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
 
     private void Initialize()
     {
-        ImageUtilities.Initialize();
-
         this.Icon = new WindowIcon(ImageUtilities.GetBitmapStream(Misc.Image.Images.Icon, Folders.Default));
         this.FontFamily = new FontFamily("Lucida Console");
         this.CanResize = false;
@@ -62,7 +61,6 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
         WebViewPanel.Children.Add(this.WebView);
         this.WebView.HorizontalAlignment = HorizontalAlignment.Stretch;
         this.WebView.VerticalAlignment = VerticalAlignment.Stretch;
-        
         LoadSettings();
 
         MenuRibbon.SetProperties(this, null, 19, TextMenuRibbonScan, TextMenuRibbonSettings);
@@ -106,10 +104,9 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
         }
         catch (Exception e)
         {
-            IMsBoxWindow<ButtonResult> buttonResult = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(TextErrorTitle,
-                e.Message, ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Success);
-
-            await buttonResult.ShowDialog(this);
+            IMsBox<ButtonResult> buttonResult = MessageBoxManager.GetMessageBoxStandard(TextErrorTitle, this._virusTotalHandler.IsKeyValid ? e.Message : TextSettingsDialogSaveDescriptionError, ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+            await buttonResult.ShowAsPopupAsync(this);
+            OpenMainMenu(TextMenuRibbonSettings);
         }
     }
 
@@ -131,10 +128,10 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
         }
         catch (Exception e)
         {
-            IMsBoxWindow<ButtonResult> buttonResult = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(TextErrorTitle,
-                e.Message, ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Success);
-
-            await buttonResult.ShowDialog(this);
+            IMsBox<ButtonResult> buttonResult = MessageBoxManager.GetMessageBoxStandard(TextErrorTitle, this._virusTotalHandler.IsKeyValid ? e.Message : TextSettingsDialogSaveDescriptionError, ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Error);
+            await buttonResult.ShowAsPopupAsync(this);
+            OpenMainMenu(TextMenuRibbonSettings);
+            return;
         }
         
         OpenMainMenu(TextMenuRibbonWebView);
@@ -143,7 +140,6 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
     void MenuRibbon.ITopRibbonClick.Click(String button)
     {
         OpenMainMenu(button);
-        
         switch (button)
         {
             case TextScanRibbonFile:
@@ -164,16 +160,19 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
                 SettingsPanel.IsVisible = false;
                 WebViewPanel.IsVisible = false;
                 OpenGreetMenu();
+                MenuRibbon.Select(0);
                 break;
             case TextMenuRibbonSettings:
                 ScanPanel.IsVisible = false;
                 SettingsPanel.IsVisible = true;
                 WebViewPanel.IsVisible = false;
+                MenuRibbon.Select(1);
                 break;
             case TextMenuRibbonWebView:
                 ScanPanel.IsVisible = false;
                 SettingsPanel.IsVisible = false;
                 WebViewPanel.IsVisible = true;
+                MenuRibbon.Select(-1);
                 break;
         }
     }
@@ -199,7 +198,6 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
         ScanGreetPanel.IsVisible = true;
         ScanFilePanel.IsVisible = false;
         ScanUrlPanel.IsVisible = false;
-        ScanRibbon.Select(-1);
     }
 
     private async Task<Boolean> InitializeVirusTotal()
@@ -207,23 +205,23 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
         this._virusTotalHandler = new VirusTotalHandler(this._settings.VirusTotalApiKey);
 
         if (this._virusTotalHandler.IsKeyValid) return true;
-        
-        IMsBoxWindow<ButtonResult> buttonResult = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(TextSettingsDialogRegisterKeyTitle,
-            TextSettingsDialogRegisterKeyDescription, ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Info);
 
-        await buttonResult.ShowDialog(this);
+        IMsBox<ButtonResult> buttonResult = MessageBoxManager.GetMessageBoxStandard(TextSettingsDialogRegisterKeyTitle, TextSettingsDialogRegisterKeyDescription, ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
+        await buttonResult.ShowAsPopupAsync(this);
+        OpenMainMenu(TextMenuRibbonSettings);
         return true;
     }
 
     private async void SaveSettings()
     {
         this._settings.VirusTotalApiKey = ApiTextBox.Text;
+
+        Boolean isInitialized = await InitializeVirusTotal();
         
-        if (!await InitializeVirusTotal())
+        if (!isInitialized)
         {
-            IMsBoxWindow<ButtonResult> errorResult = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(TextSettingsDialogSaveTitle,
-            TextSettingsDialogSaveDescriptionError, ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Error);
-            await errorResult.Show(this);
+            IMsBox<ButtonResult> errorResult = MessageBoxManager.GetMessageBoxStandard(TextSettingsDialogSaveTitle, TextSettingsDialogSaveDescriptionError, ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
+            await errorResult.ShowAsPopupAsync(this);
             return;
         };
 
@@ -233,10 +231,8 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
         path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyComputer), SettingsFile);
         JSONManager.SerializeToFile(this._settings, path);
 
-        IMsBoxWindow<ButtonResult> buttonResult = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow(TextSettingsDialogSaveTitle,
-            TextSettingsDialogSaveDescriptionValid, ButtonEnum.Ok, MessageBox.Avalonia.Enums.Icon.Success);
-
-        await buttonResult.Show(this);
+        IMsBox<ButtonResult> buttonResult = MessageBoxManager.GetMessageBoxStandard(TextSettingsDialogSaveTitle, TextSettingsDialogSaveDescriptionValid, ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Success);
+        await buttonResult.ShowAsPopupAsync(this);
     }
 
     private async void LoadSettings()
@@ -253,6 +249,15 @@ public partial class MainWindow : Window, MenuRibbon.ITopRibbonClick
         this._settings = JSONManager.DeserializeFromFile<Settings>(path) ?? new Settings(String.Empty);
 
         ApiTextBox.Text = this._settings.VirusTotalApiKey;
-        await InitializeVirusTotal();
+
+        try
+        {
+            await InitializeVirusTotal();
+        } catch(Exception e)
+        {
+            IMsBox<ButtonResult> errorResult = MessageBoxManager.GetMessageBoxStandard(TextConfigurationTitle, TextSettingsDialogRegisterKeyDescription, ButtonEnum.Ok, MsBox.Avalonia.Enums.Icon.Info);
+            await errorResult.ShowAsPopupAsync(this);
+            OpenMainMenu(TextMenuRibbonSettings);
+        }
     }
 }

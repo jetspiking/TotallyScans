@@ -104,12 +104,12 @@ public partial class MenuRibbon : UserControl
             this._iTopRibbonClick?.Click(button);
             SelectButton(label);
         };
-        label.PointerEnter += delegate
+        label.PointerEntered += delegate
         {
             label.Opacity = .8;
             HoverButton(label);
         };
-        label.PointerLeave += delegate
+        label.PointerExited += delegate
         {
             label.Opacity = 1.0;
             ExitButton(label);

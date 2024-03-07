@@ -12,15 +12,9 @@ namespace TotallyScans.Misc
     /// </summary>
     public static class ImageUtilities
     {
-        private static IAssetLoader? _assetLoader;
-
-        public static void Initialize()
-        {
-            _assetLoader = AvaloniaLocator.Current?.GetService<IAssetLoader>();
-        }
         public static Stream? GetBitmapStream(Image.Images image, Folders folders)
         {
-            return _assetLoader?.Open(BuildImageUri(image, folders));
+            return AssetLoader.Open(BuildImageUri(image, folders));
         }
         private static Uri BuildImageUri(Image.Images image, Folders folders)
         {

@@ -1,21 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media.Imaging;
-using MessageBox.Avalonia.BaseWindows.Base;
-using MessageBox.Avalonia.Enums;
-using TotallyScans.Misc;
 using VirusTotalNet;
-using VirusTotalNet.Objects;
-using VirusTotalNet.ResponseCodes;
 using VirusTotalNet.Results;
-using WebViewControl;
 
 namespace TotallyScans.Core;
 
@@ -27,29 +17,43 @@ public class VirusTotalHandler
 
     public VirusTotalHandler(String apiKey)
     {
-        try
-        {
-            this.VirusTotal = new VirusTotal(apiKey);
-            this.VirusTotal.UseTLS = true;
-            this.IsKeyValid = true;
-        }
-        catch (Exception e) {}
+        this.VirusTotal = new VirusTotal(apiKey);
+        this.VirusTotal.UseTLS = true;
+        this.IsKeyValid = true;
     }
-    
-    public async Task ScanFile(String file, MainWindow mainWindow)
+
+    public async Task ScanFile(String file, MainWindow mainWindow, int count = 0)
     {
-        ScanResult fileResult = await this.VirusTotal.ScanFileAsync(file);
-        mainWindow.WebView.Address = fileResult.Permalink;
+        String? resultUrl = String.Empty;
+        FileReport fileResult = await this.VirusTotal.GetFileReportAsync(new FileInfo(file));
+        if (fileResult == null)
+        {
+            ScanResult rescanResult = await this.VirusTotal.ScanFileAsync(file);
+            resultUrl = rescanResult.Permalink;
+        }
+        else resultUrl = fileResult.Permalink;
+        if (resultUrl != String.Empty && resultUrl != null)
+        {
+            mainWindow.WebView.Address = resultUrl;
+            return;
+        }
+        if (count >= 1)
+        {
+            mainWindow.WebView.LoadHtml("<!DOCTYPE html><html><head><title>Processing File</title></head><body><p>File is now being processed, please retrieve the result later by rescanning the file.</p></body></html>");
+            return;
+        }
+        await Task.Delay(1000);
+        await ScanFile(file, mainWindow, ++count);
     }
 
     public async Task ScanUrl(String url, MainWindow mainWindow)
-    { 
-        UrlScanResult urlResult = await this.VirusTotal.ScanUrlAsync(url);
+    {
+        UrlReport urlResult = await this.VirusTotal.GetUrlReportAsync(url, true);
         mainWindow.WebView.Address = urlResult.Permalink;
     }
-    
+
     public async void ScanIp(String ip, MainWindow mainWindow)
-    { 
+    {
         UrlScanResult ipResult = await this.VirusTotal.ScanUrlAsync(ip);
         mainWindow.WebView.Address = ipResult.Permalink;
     }
@@ -86,7 +90,7 @@ public class VirusTotalHandler
             }
         }
     }
-    
+
     public static void OpenRegisterUrl(MainWindow mainWindow)
     {
         OpenUrlInWebView(VirusTotalRegisterUrl, mainWindow);
